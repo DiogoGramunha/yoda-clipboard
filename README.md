@@ -40,12 +40,13 @@ exports['yoda-clipboard']:addTaskCompleted(taskId, count)
 exports['yoda-clipboard']:clearClipboard()
 ```
 
-⚙️ ox_inventory Integration
+## ⚙️ ox_inventory Integration
 This script automatically adds a clipboard item to the player's inventory when tasks are created and removes it when tasks are cleared.
 
-📝 Defining the Clipboard Item in ox_inventory
+## 📝 Defining the Clipboard Item in ox_inventory
 Add the following to your ox_inventory item list (usually in shared/items.lua):
 
+```lua
 ['clipboard'] = {
     label = "Clipboard",
     weight = 100,
@@ -57,28 +58,30 @@ Add the following to your ox_inventory item list (usually in shared/items.lua):
     }
 },
 
-🔌 How It Works
-Creating Tasks:
+```
 
-Displays the UI with a list of tasks.
+## 🔌 How It Works
+#### Creating Tasks:
 
-Triggers an animation (showing the clipboard in the player's hand).
+ * Displays the UI with a list of tasks.
 
-Adds the clipboard item to the player's inventory via ox_inventory.
+ * Triggers an animation (showing the clipboard in the player's hand).
 
-Updating Tasks:
+ * Adds the clipboard item to the player's inventory via ox_inventory.
 
-Increments the task progress.
+### Updating Tasks:
 
-Marks tasks as completed in the UI once the progress meets or exceeds the total requirement.
+ * Increments the task progress.
 
-Clearing Tasks:
+ * Marks tasks as completed in the UI once the progress meets or exceeds the total requirement.
 
-Closes the UI and stops animations.
+### Clearing Tasks:
 
-Clears the task list.
+ * Closes the UI and stops animations.
 
-Removes the clipboard item from the player's inventory via ox_inventory.
+ * Clears the task list.
 
-💡 Final Notes
+ * Removes the clipboard item from the player's inventory via ox_inventory.
+
+## 💡 Final Notes
 Easily integrate Yoda Clipboard into your FiveM scripts for a sleek and modern task management experience! 🚀
