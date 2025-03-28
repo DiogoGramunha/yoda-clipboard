@@ -66,7 +66,7 @@ AddEventHandler('yoda-clipboard:createTasks', function(taskList, total)
             task.current = 0
         end
         if task.total == nil then
-            task.total = 1  -- ou outro valor padrão apropriado
+            task.total = 1
         end
     end    
 
@@ -83,6 +83,12 @@ AddEventHandler('yoda-clipboard:createTasks', function(taskList, total)
         completedTasks = completedTasks
     })
     startClipboardAnim()
+
+    if Config.framework == 'qb' then
+        TriggerServerEvent('QBCore:Server:AddItem', 'clipboard', 1)
+    else
+        TriggerServerEvent('esx:addInventoryItem', 'clipboard', 1)
+    end
 end)
 
 -- Função para fechar o UI
@@ -133,6 +139,12 @@ local function updateTask(taskId, count)
     end
 end
 
+RegisterNetEvent('yoda-clipboard:useClipboard')
+AddEventHandler('yoda-clipboard:useClipboard', function()
+    -- Trigger the event to open the clipboard UI. Adjust this to your needs.
+    TriggerEvent('yoda-clipboard:createTasks', tasks, #tasks)
+end)
+
 -- Comando para abrir o clipboard utilizando as informações existentes em tasks
 RegisterCommand('clipboard', function()
     TriggerEvent('yoda-clipboard:createTasks', tasks, (#tasks or 0))
@@ -155,6 +167,12 @@ exports('clearClipboard', function()
     completedTasks = 0
     closeUI()
     SendNUIMessage({ action = 'clearUI' })
+
+    if Config.framework == 'qb' then
+        TriggerServerEvent('QBCore:Server:RemoveItem', 'clipboard', 1)
+    else
+        TriggerServerEvent('esx:removeInventoryItem', 'clipboard', 1)
+    end
 end)
 
 -- Desabilitar o ESC e fechar o UI

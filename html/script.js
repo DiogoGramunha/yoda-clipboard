@@ -21,7 +21,9 @@ function createTaskUI(tasks) {
     html += '<div class="finished">Nenhuma tarefa disponível</div>';
   } else {
     tasks.forEach(task => {
-      html += `<div id="task-${task.id}" class="task">`;
+      // Verifica se a tarefa está concluída
+      let completedClass = (task.current >= task.total) ? ' completed' : '';
+      html += `<div id="task-${task.id}" class="task${completedClass}">`;
       html += `<span class="label">${task.label}</span>`;
       if (task.total) {
         html += `<span id="counter-${task.id}" class="counter">${task.current || 0}/${task.total}</span>`;

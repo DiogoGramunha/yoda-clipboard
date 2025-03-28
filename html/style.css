@@ -11,8 +11,8 @@ body {
 
 .clipboard-container {
   position: relative;
-  width: 370px;
-  height: 500px;
+  width: 350px;
+  height: 480px;
   margin-right: 2px;
   display: flex;
   align-items: center;
@@ -32,8 +32,8 @@ body {
 }
 
 .sheet {
-  width: 250px;
-  height: 370px;
+  width: 230px;
+  height: 360px;
   background: #fff;
   padding: 20px;
   position: absolute;
@@ -51,10 +51,12 @@ body {
   text-align: center;
   font-weight: bold;
   color: #555;
-  font-size: 22px;
+  font-size: 18px;
+  width: 100%;
 }
 
 .title {
+  margin-top: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -72,14 +74,19 @@ body {
 }
 
 .label {
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .counter {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: bold;
-  margin-left: 10px; /* Afasta o contador do texto */
+  margin-left: 20px; /* Afasta o contador do texto */
   white-space: nowrap; /* Impede a quebra de linha do contador */
   text-align: right; /* Alinha o contador à direita */
   flex-shrink: 0; /* Impede que o contador encolha */
+}
+
+.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
 }
