@@ -24,3 +24,35 @@ exports['yoda-clipboard']:addTaskCompleted(2, 1)
 
 -- Clear tasks and remove the clipboard item:
 exports['yoda-clipboard']:clearClipboard()
+```
+
+## ✅ Parameters
+### For createTasks:
+```lua
+exports['yoda-clipboard']:createTasks(taskList, total)
+```
+### For addTaskCompleted:
+```lua
+exports['yoda-clipboard']:addTaskCompleted(taskId, count)
+```
+### For clearClipboard:
+```lua
+exports['yoda-clipboard']:clearClipboard()
+```
+
+⚙️ ox_inventory Integration
+This script automatically adds a clipboard item to the player's inventory when tasks are created and removes it when tasks are cleared.
+
+📝 Defining the Clipboard Item in ox_inventory
+Add the following to your ox_inventory item list (usually in shared/items.lua):
+
+['clipboard'] = {
+    label = "Clipboard",
+    weight = 100,
+    stack = true,        -- Allows the item to be stacked
+    close = true,        -- Closes the inventory UI when the item is used
+    description = "A clipboard used to manage tasks.",
+    client = {
+        event = "yoda-clipboard:useClipboard", -- Trigger when used
+    }
+},
