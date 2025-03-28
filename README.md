@@ -56,3 +56,29 @@ Add the following to your ox_inventory item list (usually in shared/items.lua):
         event = "yoda-clipboard:useClipboard", -- Trigger when used
     }
 },
+
+🔌 How It Works
+Creating Tasks:
+
+Displays the UI with a list of tasks.
+
+Triggers an animation (showing the clipboard in the player's hand).
+
+Adds the clipboard item to the player's inventory via ox_inventory.
+
+Updating Tasks:
+
+Increments the task progress.
+
+Marks tasks as completed in the UI once the progress meets or exceeds the total requirement.
+
+Clearing Tasks:
+
+Closes the UI and stops animations.
+
+Clears the task list.
+
+Removes the clipboard item from the player's inventory via ox_inventory.
+
+💡 Final Notes
+Easily integrate Yoda Clipboard into your FiveM scripts for a sleek and modern task management experience! 🚀
