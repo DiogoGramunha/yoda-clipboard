@@ -1,75 +1,85 @@
 body {
-    margin: 0;
-    padding: 0;
-    background: #e0e0e0;
-    font-family: 'Shadows Into Light', cursive;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    position: relative;
-  }
-  
-  /* Container que simula a prancheta com a imagem de fundo */
-  .clipboard-container {
-    position: relative;
-    width: 350px;
-    height: 500px;
-    margin-right: 20px;
-    background: url('clipboard.png') no-repeat center center;
-    background-size: cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  /* A "folha" onde as tasks são exibidas */
-  .sheet {
-    width: 300px;
-    height: 400px;
-    background: #fff;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    overflow-y: auto;
-  }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 28px;
-  }
-  
-  .task {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    margin: 10px 0;
-    border-bottom: 1px dashed #ccc;
-    font-size: 20px;
-    line-height: 1.4;
-  }
-  
-  .task.completed {
-    text-decoration: line-through;
-    color: #888;
-  }
-  
-  .counter {
-    font-size: 18px;
-    color: #555;
-  }
-  
-  .finished {
-    margin-top: 20px;
-    text-align: center;
-    font-weight: bold;
-    color: green;
-    font-size: 22px;
-    display: none;
-  }
-  
+  margin: 0;
+  padding: 0;
+  font-family: 'Dancing Script', cursive; /* Fonte manuscrita */
+  height: 100vh;
+  display: none; /* Começa invisível */
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.clipboard-container {
+  position: relative;
+  width: 370px;
+  height: 500px;
+  margin-right: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clipboard-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('./img/clipboard.png') no-repeat center center;
+  background-size: cover;
+  z-index: 2;
+}
+
+.sheet {
+  width: 250px;
+  height: 370px;
+  background: #fff;
+  padding: 20px;
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow-y: auto;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  z-index: 1;
+}
+
+.finished {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: #555;
+  font-size: 22px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Para importar fontes do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+
+/* Estilo para as tasks */
+.task {
+  display: flex;
+  justify-content: space-between; /* Distribui o texto e o contador nas extremidades */
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.label {
+  font-size: 15px;
+}
+
+.counter {
+  font-size: 15px;
+  font-weight: bold;
+  margin-left: 10px; /* Afasta o contador do texto */
+  white-space: nowrap; /* Impede a quebra de linha do contador */
+  text-align: right; /* Alinha o contador à direita */
+  flex-shrink: 0; /* Impede que o contador encolha */
+}
