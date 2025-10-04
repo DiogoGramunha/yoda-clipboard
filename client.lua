@@ -1,55 +1,55 @@
 local tasks = {}
 local totalTasks = 0
 local completedTasks = 0
-local uiOpen = false -- Variável para controlar se o UI está aberto
-local clipboardProp = nil -- Variável para armazenar o prop do clipboard
+local uiOpen = false -- Variable to control whether the UI is open
+local clipboardProp = nil -- Variable to store the clipboard prop
 
 local function startClipboardAnim()
     local ped = PlayerPedId()
     local dict = "amb@world_human_clipboard@male@base"
-    local propModel = "p_amb_clipboard_01" -- Modelo do clipboard
+    local propModel = "p_amb_clipboard_01" -- Clipboard model
 
-    -- Requisita o modelo do prop
+    -- Request the prop model
     RequestModel(propModel)
     while not HasModelLoaded(propModel) do
         Wait(0)
     end
 
-    -- Cria o prop e o anexa à mão direita do personagem
+    -- Create the prop and attach it to the character's right hand
     if clipboardProp == nil then
         clipboardProp = CreateObject(GetHashKey(propModel), 0, 0, 0, true, true, false)
         AttachEntityToEntity(
             clipboardProp, 
             ped, 
-            GetPedBoneIndex(ped, 60309), -- Índice do osso (mão direita)
-            0.01, -0.01, 0.0, -- Ajuste fino de posição (x, y, z)
-            0.0, -15.0, 0.0, -- Rotação (faz o clipboard ficar horizontal e virado para a esquerda)
+            GetPedBoneIndex(ped, 60309), -- Bone index (right hand)
+            0.01, -0.01, 0.0, -- Fine position adjustment (x, y, z)
+            0.0, -15.0, 0.0, -- Rotation (makes the clipboard horizontal and turned to the left)
             true, true, false, true, 1, true
         )
     end
 
-    -- Requisita o dicionário de animação e inicia a animação
+    -- Request the animation dictionary and start the animation
     RequestAnimDict(dict)
     while not HasAnimDictLoaded(dict) do
         Wait(0)
     end
-    -- TaskPlayAnim com flag 49 permite andar enquanto anima
+    -- TaskPlayAnim with flag 49 allows walking while animating
     TaskPlayAnim(ped, dict, "base", 8.0, -8.0, -1, 49, 0, false, false, false)
 end
 
--- Função para parar a animação e remover o prop
+-- Function to stop the animation and remove the prop
 local function stopClipboardAnim()
     local ped = PlayerPedId()
     ClearPedTasks(ped)
 
-    -- Remove o prop, se existir
+    -- Delete the prop, if it exists
     if clipboardProp ~= nil then
         DeleteObject(clipboardProp)
         clipboardProp = nil
     end
 end
 
--- Função para garantir que a animação continue ativa
+-- Function to ensure the animation stays active
 local function ensureClipboardAnim()
     local ped = PlayerPedId()
     if not IsEntityPlayingAnim(ped, "amb@world_human_clipboard@male@base", "base", 3) then
@@ -74,7 +74,7 @@ AddEventHandler('yoda-clipboard:createTasks', function(taskList, total)
     completedTasks = 0
     uiOpen = true
 
-    -- Não usamos o NUI focus para permitir movimento; apenas mostramos o UI
+    -- We don't use NUI focus to allow movement; we only show the UI
     SetNuiFocus(false, false)
     SendNUIMessage({
         action = 'createTasks',
@@ -91,7 +91,7 @@ AddEventHandler('yoda-clipboard:createTasks', function(taskList, total)
     end
 end)
 
--- Função para fechar o UI
+-- Function to close the UI
 function closeUI()
     uiOpen = false
     SetNuiFocus(false, false)
@@ -99,37 +99,37 @@ function closeUI()
     stopClipboardAnim()
 end
 
--- Função para fechar o UI via NUI callback
+-- Function to close the UI via NUI callback
 RegisterNUICallback('closeUI', function()
     closeUI()
 end)
 
--- Função para atualizar uma tarefa
+-- Function to update a task
 local function updateTask(taskId, count)
-    -- Verifica se a task existe antes de tentar atualizar
+    -- Check if the task exists before trying to update
     if tasks[taskId] then
-        -- Atualiza a quantidade completada da task
+        -- Update the task's completed amount
         tasks[taskId].current = tasks[taskId].current + count
 
-        -- Verifica se a task foi completada
+        -- Check if the task is completed
         if tasks[taskId].current >= tasks[taskId].total then
-            -- Marcar como completada
+            -- Mark as completed
             completedTasks = completedTasks + 1
             SendNUIMessage({
-                action = 'completeTask',  -- Ação para marcar como completada no UI
+                action = 'completeTask',  -- Action to mark as completed in the UI
                 taskId = taskId
             })
         end
 
-        -- Envia a atualização do contador da task para o UI
+        -- Send the updated task count to the UI
         SendNUIMessage({
             action = 'updateTask',
             taskId = taskId,
-            current = tasks[taskId].current,  -- envia o valor atual
-            total = tasks[taskId].total  -- envia o total
+            current = tasks[taskId].current,  -- send current value
+            total = tasks[taskId].total  -- send total
         })
 
-        -- Verifica se todas as tarefas foram completadas
+        -- Check if all tasks are completed
         if completedTasks >= totalTasks then
             SendNUIMessage({ action = 'finishTasks' })
             closeUI()
@@ -145,22 +145,22 @@ AddEventHandler('yoda-clipboard:useClipboard', function()
     TriggerEvent('yoda-clipboard:createTasks', tasks, #tasks)
 end)
 
--- Comando para abrir o clipboard utilizando as informações existentes em tasks
+-- Command to open the clipboard using the existing task info
 RegisterCommand('clipboard', function()
     TriggerEvent('yoda-clipboard:createTasks', tasks, (#tasks or 0))
 end)
 
--- Exporta a função para criar tasks (permite definir tasks via exports)
+-- Export function to create tasks (allows setting tasks via exports)
 exports('createTasks', function(taskList, total)
     TriggerEvent('yoda-clipboard:createTasks', taskList, total)
 end)
 
--- Exporta a função para atualizar/concluir uma task
+-- Export function to update/complete a task
 exports('addTaskCompleted', function(taskId, count)
     updateTask(taskId, count)
 end)
 
--- Exporta a função para limpar o clipboard
+-- Export function to clear the clipboard
 exports('clearClipboard', function()
     tasks = {}
     totalTasks = 0
@@ -175,17 +175,17 @@ exports('clearClipboard', function()
     end
 end)
 
--- Desabilitar o ESC e fechar o UI
+-- Disable ESC and close the UI
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
         if uiOpen then
-            -- Garantir que a animação esteja ativa
+            -- Ensure the animation is active
             ensureClipboardAnim()
             
-            -- Desabilita o ESC e o Mapa (P)
+            -- Disable ESC and Map (P)
             DisableControlAction(0, 322, true) -- ESC
-            DisableControlAction(0, 200, true) -- Mapa (tecla 'P')
+            DisableControlAction(0, 200, true) -- Map (key 'P')
             if IsDisabledControlJustReleased(0, 322) or IsDisabledControlJustReleased(0, 200) then
                 closeUI()
             end
