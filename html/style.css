@@ -1,9 +1,9 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Dancing Script', cursive; /* Fonte manuscrita */
+  font-family: 'Dancing Script', cursive; /* Handwritten font */
   height: 100vh;
-  display: none; /* Começa invisível */
+  display: none; /* Starts hidden */
   align-items: center;
   justify-content: flex-end;
   position: relative;
@@ -62,13 +62,13 @@ body {
   justify-content: center;
 }
 
-/* Para importar fontes do Google Fonts */
+/* To import fonts from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
 
-/* Estilo para as tasks */
+/* Style for tasks */
 .task {
   display: flex;
-  justify-content: space-between; /* Distribui o texto e o contador nas extremidades */
+  justify-content: space-between; /* Distributes text and counter to opposite ends */
   align-items: center;
   margin-bottom: 10px;
 }
@@ -80,10 +80,10 @@ body {
 .counter {
   font-size: 14px;
   font-weight: bold;
-  margin-left: 20px; /* Afasta o contador do texto */
-  white-space: nowrap; /* Impede a quebra de linha do contador */
-  text-align: right; /* Alinha o contador à direita */
-  flex-shrink: 0; /* Impede que o contador encolha */
+  margin-left: 20px; /* Adds space between text and counter */
+  white-space: nowrap; /* Prevents counter from wrapping */
+  text-align: right; /* Aligns counter to the right */
+  flex-shrink: 0; /* Prevents counter from shrinking */
 }
 
 .completed {
