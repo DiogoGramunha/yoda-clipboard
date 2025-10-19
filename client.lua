@@ -1,55 +1,55 @@
 local tasks = {}
 local totalTasks = 0
 local completedTasks = 0
-local uiOpen = false -- Variable to control whether the UI is open
-local clipboardProp = nil -- Variable to store the clipboard prop
+local uiOpen = false -- Variável para controlar se o UI está aberto
+local clipboardProp = nil -- Variável para armazenar o prop do clipboard
 
 local function startClipboardAnim()
     local ped = PlayerPedId()
     local dict = "amb@world_human_clipboard@male@base"
-    local propModel = "p_amb_clipboard_01" -- Clipboard model
+    local propModel = "p_amb_clipboard_01" -- Modelo do clipboard
 
-    -- Request the prop model
+    -- Requisita o modelo do prop
     RequestModel(propModel)
     while not HasModelLoaded(propModel) do
         Wait(0)
     end
 
-    -- Create the prop and attach it to the character's right hand
+    -- Cria o prop e o anexa à mão direita do personagem
     if clipboardProp == nil then
         clipboardProp = CreateObject(GetHashKey(propModel), 0, 0, 0, true, true, false)
         AttachEntityToEntity(
             clipboardProp, 
             ped, 
-            GetPedBoneIndex(ped, 60309), -- Bone index (right hand)
-            0.01, -0.01, 0.0, -- Fine position adjustment (x, y, z)
-            0.0, -15.0, 0.0, -- Rotation (makes the clipboard horizontal and turned to the left)
+            GetPedBoneIndex(ped, 60309), -- Índice do osso (mão direita)
+            0.01, -0.01, 0.0, -- Ajuste fino de posição (x, y, z)
+            0.0, -15.0, 0.0, -- Rotação (faz o clipboard ficar horizontal e virado para a esquerda)
             true, true, false, true, 1, true
         )
     end
 
-    -- Request the animation dictionary and start the animation
+    -- Requisita o dicionário de animação e inicia a animação
     RequestAnimDict(dict)
     while not HasAnimDictLoaded(dict) do
         Wait(0)
     end
-    -- TaskPlayAnim with flag 49 allows walking while animating
+    -- TaskPlayAnim com flag 49 permite andar enquanto anima
     TaskPlayAnim(ped, dict, "base", 8.0, -8.0, -1, 49, 0, false, false, false)
 end
 
--- Function to stop the animation and remove the prop
+-- Função para parar a animação e remover o prop
 local function stopClipboardAnim()
     local ped = PlayerPedId()
     ClearPedTasks(ped)
 
-    -- Delete the prop, if it exists
+    -- Remove o prop, se existir
     if clipboardProp ~= nil then
         DeleteObject(clipboardProp)
         clipboardProp = nil
     end
 end
 
--- Function to ensure the animation stays active
+-- Função para garantir que a animação continue ativa
 local function ensureClipboardAnim()
     local ped = PlayerPedId()
     if not IsEntityPlayingAnim(ped, "amb@world_human_clipboard@male@base", "base", 3) then
@@ -59,6 +59,8 @@ end
 
 RegisterNetEvent('yoda-clipboard:createTasks')
 AddEventHandler('yoda-clipboard:createTasks', function(taskList, total)
+
+    
     tasks = taskList or {}
 
     for _, task in ipairs(tasks) do
@@ -74,7 +76,10 @@ AddEventHandler('yoda-clipboard:createTasks', function(taskList, total)
     completedTasks = 0
     uiOpen = true
 
-    -- We don't use NUI focus to allow movement; we only show the UI
+    print("Final tasks: " .. json.encode(tasks))
+    print("Total tasks: " .. totalTasks)
+
+    -- Não usamos o NUI focus para permitir movimento; apenas mostramos o UI
     SetNuiFocus(false, false)
     SendNUIMessage({
         action = 'createTasks',
@@ -84,14 +89,10 @@ AddEventHandler('yoda-clipboard:createTasks', function(taskList, total)
     })
     startClipboardAnim()
 
-    if Config.framework == 'qb' then
-        TriggerServerEvent('QBCore:Server:AddItem', 'clipboard', 1)
-    else
-        TriggerServerEvent('esx:addInventoryItem', 'clipboard', 1)
-    end
+    TriggerServerEvent('yoda-clipboard:GiveClipboard', true)
 end)
 
--- Function to close the UI
+-- Função para fechar o UI
 function closeUI()
     uiOpen = false
     SetNuiFocus(false, false)
@@ -99,37 +100,37 @@ function closeUI()
     stopClipboardAnim()
 end
 
--- Function to close the UI via NUI callback
+-- Função para fechar o UI via NUI callback
 RegisterNUICallback('closeUI', function()
     closeUI()
 end)
 
--- Function to update a task
+-- Função para atualizar uma tarefa
 local function updateTask(taskId, count)
-    -- Check if the task exists before trying to update
+    -- Verifica se a task existe antes de tentar atualizar
     if tasks[taskId] then
-        -- Update the task's completed amount
+        -- Atualiza a quantidade completada da task
         tasks[taskId].current = tasks[taskId].current + count
 
-        -- Check if the task is completed
+        -- Verifica se a task foi completada
         if tasks[taskId].current >= tasks[taskId].total then
-            -- Mark as completed
+            -- Marcar como completada
             completedTasks = completedTasks + 1
             SendNUIMessage({
-                action = 'completeTask',  -- Action to mark as completed in the UI
+                action = 'completeTask',  -- Ação para marcar como completada no UI
                 taskId = taskId
             })
         end
 
-        -- Send the updated task count to the UI
+        -- Envia a atualização do contador da task para o UI
         SendNUIMessage({
             action = 'updateTask',
             taskId = taskId,
-            current = tasks[taskId].current,  -- send current value
-            total = tasks[taskId].total  -- send total
+            current = tasks[taskId].current,  -- envia o valor atual
+            total = tasks[taskId].total  -- envia o total
         })
 
-        -- Check if all tasks are completed
+        -- Verifica se todas as tarefas foram completadas
         if completedTasks >= totalTasks then
             SendNUIMessage({ action = 'finishTasks' })
             closeUI()
@@ -141,51 +142,69 @@ end
 
 RegisterNetEvent('yoda-clipboard:useClipboard')
 AddEventHandler('yoda-clipboard:useClipboard', function()
-    -- Trigger the event to open the clipboard UI. Adjust this to your needs.
-    TriggerEvent('yoda-clipboard:createTasks', tasks, #tasks)
+    -- Apenas abrir o UI com as tarefas existentes, sem dar o item novamente
+    if #tasks > 0 then
+        uiOpen = true
+        SetNuiFocus(false, false)
+        SendNUIMessage({
+            action = 'createTasks',
+            tasks = tasks,
+            totalTasks = totalTasks,
+            completedTasks = completedTasks
+        })
+        startClipboardAnim()
+    else
+        -- Se não há tarefas, mostrar mensagem
+        print("No tasks available")
+    end
 end)
 
--- Command to open the clipboard using the existing task info
+-- Comando para abrir o clipboard utilizando as informações existentes em tasks
 RegisterCommand('clipboard', function()
-    TriggerEvent('yoda-clipboard:createTasks', tasks, (#tasks or 0))
+    if #tasks > 0 then
+        uiOpen = true
+        SetNuiFocus(false, false)
+        SendNUIMessage({
+            action = 'createTasks',
+            tasks = tasks,
+            totalTasks = totalTasks,
+            completedTasks = completedTasks
+        })
+        startClipboardAnim()
+    else
+        print("No tasks available")
+    end
 end)
 
--- Export function to create tasks (allows setting tasks via exports)
-exports('createTasks', function(taskList, total)
-    TriggerEvent('yoda-clipboard:createTasks', taskList, total)
-end)
-
--- Export function to update/complete a task
-exports('addTaskCompleted', function(taskId, count)
+-- Exporta a função para criar tasks (permite definir tasks via exports)
+-- Handlers para chamadas vindas do servidor (quando exports forem server-side)
+RegisterNetEvent('yoda-clipboard:addTaskCompleted')
+AddEventHandler('yoda-clipboard:addTaskCompleted', function(taskId, count)
     updateTask(taskId, count)
 end)
 
--- Export function to clear the clipboard
-exports('clearClipboard', function()
+RegisterNetEvent('yoda-clipboard:clearClipboard')
+AddEventHandler('yoda-clipboard:clearClipboard', function()
     tasks = {}
     totalTasks = 0
     completedTasks = 0
     closeUI()
     SendNUIMessage({ action = 'clearUI' })
 
-    if Config.framework == 'qb' then
-        TriggerServerEvent('QBCore:Server:RemoveItem', 'clipboard', 1)
-    else
-        TriggerServerEvent('esx:removeInventoryItem', 'clipboard', 1)
-    end
+    TriggerServerEvent('yoda-clipboard:GiveClipboard', false)
 end)
 
--- Disable ESC and close the UI
+-- Desabilitar o ESC e fechar o UI
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
         if uiOpen then
-            -- Ensure the animation is active
+            -- Garantir que a animação esteja ativa
             ensureClipboardAnim()
             
-            -- Disable ESC and Map (P)
+            -- Desabilita o ESC e o Mapa (P)
             DisableControlAction(0, 322, true) -- ESC
-            DisableControlAction(0, 200, true) -- Map (key 'P')
+            DisableControlAction(0, 200, true) -- Mapa (tecla 'P')
             if IsDisabledControlJustReleased(0, 322) or IsDisabledControlJustReleased(0, 200) then
                 closeUI()
             end
