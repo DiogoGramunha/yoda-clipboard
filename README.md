@@ -5,7 +5,11 @@ A simple and customizable task management system for FiveM with a sleek NUI inte
 
 ### Config
 Set your inventory at config.lua as qb, esx, or ox
+```lua
+Config = {}
 
+Config.inventory = 'ox' -- qb, esx, or ox
+```
 ## 🔧 Exports: `createTasks`, `addTaskCompleted` & `clearClipboard`  
 This resource provides export functions, allowing other resources to create tasks, update task progress, and clear tasks while managing the **clipboard** item via ox_inventory seamlessly.
 
