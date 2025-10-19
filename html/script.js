@@ -12,7 +12,7 @@ window.addEventListener('message', function(event) {
 });
 
 function createTaskUI(tasks) {
-  // Exibe o UI definindo o body para display: flex
+  // Show the UI by setting the body to display: flex
   document.body.style.display = "flex";
 
   const sheet = document.querySelector('.sheet');
@@ -21,7 +21,7 @@ function createTaskUI(tasks) {
     html += '<div class="finished">Nenhuma tarefa disponível</div>';
   } else {
     tasks.forEach(task => {
-      // Verifica se a tarefa está concluída
+        // Check if the task is completed
       let completedClass = (task.current >= task.total) ? ' completed' : '';
       html += `<div id="task-${task.id}" class="task${completedClass}">`;
       html += `<span class="label">${task.label}</span>`;
@@ -52,7 +52,7 @@ function completeTask(taskId) {
   const taskElem = document.getElementById(`task-${taskId}`);
   if (taskElem && !taskElem.classList.contains('completed')) {
       taskElem.classList.add('completed');
-      taskElem.style.textDecoration = 'line-through';  // Risca a task completada
+      taskElem.style.textDecoration = 'line-through';  // Strike through the completed task
   }
 }
 
@@ -64,7 +64,7 @@ function finishTaskUI() {
 }
 
 function closeUI() {
-  // Esconde o UI definindo o body para display: none
+  // Hide the UI by setting the body to display: none
   document.body.style.display = "none";
   
   // Reseta o conteúdo da sheet para o estado padrão
@@ -72,10 +72,10 @@ function closeUI() {
   sheet.innerHTML = '<h2>Checklist</h2><div class="finished">Nenhuma tarefa disponível</div>';
 }
 
-// Captura o pressionamento da tecla Esc para fechar o UI
+// Capture the Esc key press to close the UI
 document.addEventListener('keydown', function(e) {
   if (e.keyCode === 27) { // 27 é o código da tecla Esc
-    // Envia o callback para o client e fecha o UI
+    // Send the callback to the client and close the UI
     closeUI();
     fetch(`https://${GetParentResourceName()}/closeUI`, {
       method: 'POST',

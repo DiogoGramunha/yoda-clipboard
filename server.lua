@@ -4,18 +4,11 @@ AddEventHandler('yoda-clipboard:GiveClipboard', function(state)
     local src = source
     if not src or src == 0 then return end
 
-    print("=== GIVING CLIPBOARD ITEM ===")
-    print("Player: " .. src)
-    print("State: " .. tostring(state))
-    print("Inventory: " .. Config.inventory)
-
     if Config.inventory == 'ox' then
         if state then
             local success = exports.ox_inventory:AddItem(src, 'clipboard', 1)
-            print("ox_inventory AddItem result: " .. tostring(success))
         else
             local success = exports.ox_inventory:RemoveItem(src, 'clipboard', 1)
-            print("ox_inventory RemoveItem result: " .. tostring(success))
         end
     elseif Config.inventory == 'qb' then
         if state then
@@ -46,7 +39,6 @@ function createTasks(target, taskList, total)
     -- target can be a player id or source; trigger client event to open UI
     local playerId = tonumber(target) or target
     if not playerId then 
-        print("❌ Invalid playerId")
         return false 
     end
 
@@ -65,8 +57,7 @@ function createTasks(target, taskList, total)
     -- Determine total safely
     local tot = tonumber(total) or (#taskList)
     if not tot then tot = 0 end
-
-    print("Sending to client " .. playerId .. " with " .. tot .. " tasks")
+    
     TriggerClientEvent('yoda-clipboard:createTasks', playerId, taskList, tot)
     return true
 end
